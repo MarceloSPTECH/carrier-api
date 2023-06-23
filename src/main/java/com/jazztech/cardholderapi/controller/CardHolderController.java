@@ -5,9 +5,11 @@ import com.jazztech.cardholderapi.controller.response.CardHolderResponse;
 import com.jazztech.cardholderapi.service.CardHolderService;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,11 +32,16 @@ public class CardHolderController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CardHolderResponse> getAllCardHolders(@RequestParam(required = false) String status) {
-        if (Objects.isNull(status)) {
-            return cardHolderService.getAllCardholders();
-        } else {
+        if (!Objects.isNull(status)) {
             return cardHolderService.getAllCardholdersByStatus(status);
         }
+        return cardHolderService.getAllCardholders();
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus
+    public CardHolderResponse getCardHolderById(@PathVariable UUID id) {
+        return cardHolderService.getCardHolderById(id);
     }
 
 }

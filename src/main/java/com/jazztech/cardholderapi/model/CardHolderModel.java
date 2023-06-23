@@ -6,12 +6,11 @@ import java.util.UUID;
 import lombok.Builder;
 
 @Builder(toBuilder = true)
-public record CardHolderModel(UUID clientId, UUID creditAnalysisId, Status status, BigDecimal creditLimit, BankAccountModel bankAccountModel) {
-    public CardHolderModel updateModel(BankAccountModel bankAccountModel, BigDecimal creditLimit) {
+public record CardHolderModel(UUID clientId, UUID creditAnalysisId, Status status, BigDecimal creditLimit, BankAccountModel bankAccount) {
+    public CardHolderModel updateStatusAndCreditLimit(BigDecimal approvedLimit) {
         return this.toBuilder()
                 .status(Status.ACTIVE)
-                .bankAccountModel(bankAccountModel)
-                .creditLimit(creditLimit)
+                .creditLimit(approvedLimit)
                 .build();
     }
 }

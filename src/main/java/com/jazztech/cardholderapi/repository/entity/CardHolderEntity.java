@@ -14,7 +14,10 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,6 +25,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Entity
 @Table(name = "CARD_HOLDER")
 @Immutable
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@Getter
+@ToString
 public class CardHolderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,76 +51,9 @@ public class CardHolderEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_account_id", referencedColumnName = "id")
-    BankAccountEntity bankAccountEntity;
+    BankAccountEntity bankAccount;
 
-    @Builder(toBuilder = true)
-    public CardHolderEntity(UUID id, UUID clientId, UUID creditAnalysisId, Status status, BigDecimal creditLimit, LocalDateTime createdAt,
-                            LocalDateTime updatedAt, BankAccountEntity bankAccountEntity) {
-        this.id = id;
-        this.clientId = clientId;
-        this.creditAnalysisId = creditAnalysisId;
-        this.status = status;
-        this.creditLimit = creditLimit;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.bankAccountEntity = bankAccountEntity;
-    }
 
     private CardHolderEntity() {
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getClientId() {
-        return clientId;
-    }
-
-    public UUID getCreditAnalysisId() {
-        return creditAnalysisId;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public BigDecimal getCreditLimit() {
-        return creditLimit;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public BankAccountEntity getBankAccountEntity() {
-        return bankAccountEntity;
-    }
-
-    @Override
-    public String toString() {
-        return "CardHolderEntity{"
-                +
-                "id=" + id
-                +
-                ", clientId=" + clientId
-                +
-                ", creditAnalysisId=" + creditAnalysisId
-                +
-                ", status=" + status
-                +
-                ", creditLimit=" + creditLimit
-                +
-                ", createdAt=" + createdAt
-                +
-                ", updatedAt=" + updatedAt
-                +
-                ", bankAccountEntity=" + bankAccountEntity
-                +
-                '}';
     }
 }

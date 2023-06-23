@@ -13,12 +13,11 @@ import com.jazztech.cardholderapi.apiclient.CreditAnalysisClient;
 import com.jazztech.cardholderapi.apiclient.dtos.CreditAnalysisDTO;
 import com.jazztech.cardholderapi.controller.response.CardHolderResponse;
 import com.jazztech.cardholderapi.handler.exceptions.CardHolderAlreadyRegisteredException;
+import com.jazztech.cardholderapi.handler.exceptions.CardHolderNotFoundException;
 import com.jazztech.cardholderapi.handler.exceptions.ClientDoesNotCorrespondToCreditAnalysisException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotApprovedException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotFoundException;
 import com.jazztech.cardholderapi.handler.exceptions.InvalidCardHolderStatusException;
-import com.jazztech.cardholderapi.mapper.BankAccountMapper;
-import com.jazztech.cardholderapi.mapper.BankAccountMapperImpl;
 import com.jazztech.cardholderapi.mapper.CardHolderMapper;
 import com.jazztech.cardholderapi.mapper.CardHolderMapperImpl;
 import com.jazztech.cardholderapi.model.CardHolderModel;
@@ -26,6 +25,7 @@ import com.jazztech.cardholderapi.repository.CardHolderRepository;
 import com.jazztech.cardholderapi.repository.entity.CardHolderEntity;
 import com.jazztech.cardholderapi.utils.Status;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -50,13 +50,13 @@ class CardHolderServiceTest {
 
     @Spy
     private CardHolderMapper cardHolderMapper = new CardHolderMapperImpl();
-    @Spy
-    private BankAccountMapper bankAccountMapper = new BankAccountMapperImpl();
 
     @Captor
-    private ArgumentCaptor<CardHolderEntity> cardHolderEntityArgumentCaptor;
-    @Captor
     private ArgumentCaptor<UUID> creditAnalysisUUID;
+    @Captor
+    private ArgumentCaptor<UUID> cardHolderUUID;
+    @Captor
+    private ArgumentCaptor<CardHolderEntity> cardHolderEntityArgumentCaptor;
     @Captor
     private ArgumentCaptor<Status> cardHolderStatus;
 
@@ -146,4 +146,21 @@ class CardHolderServiceTest {
         assertEquals("The informed card holder status is invalid.", exception.getMessage());
 
     }
+
+    @Test
+    void should_return_a_card_holder_if_it_exists_by_id() {
+        when(cardHolderRepository.findById(cardHolderUUID.capture())).thenReturn(Optional.of(cardHolderEntityFactory()));
+        final CardHolderResponse creditAnalysisById = cardHolderService.getCardHolderById(cardHolderEntityFactory().getId());
+        assertEquals(creditAnalysisById.id(), cardHolderUUID.getValue());
+    }
+
+    @Test
+    void should_throw_CardHolderNotFoundException_if_it_does_not_exist_by_id() {
+        final UUID uuid = UUID.randomUUID();
+        when(cardHolderRepository.findById(cardHolderUUID.capture())).thenReturn(Optional.empty());
+        CardHolderNotFoundException exception =
+                assertThrows(CardHolderNotFoundException.class, () -> cardHolderService.getCardHolderById(uuid));
+        assertEquals("Card Holder not found by id %s".formatted(uuid), exception.getMessage());
+    }
+
 }

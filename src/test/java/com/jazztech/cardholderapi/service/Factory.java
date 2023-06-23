@@ -65,7 +65,7 @@ class Factory {
         return CardHolderRequest.builder()
                 .clientId(MOCKED_UUID)
                 .creditAnalysisId(MOCKED_UUID)
-                .bankAccountRequest(bankAccountRequestFactory())
+                .bankAccount(bankAccountRequestFactory())
                 .build();
     }
 
@@ -76,7 +76,7 @@ class Factory {
                 .creditAnalysisId(MOCKED_UUID)
                 .status(Status.ACTIVE)
                 .creditLimit(MOCKED_CREDIT_LIMIT)
-                .bankAccountModel(bankAccountModelFactory())
+                .bankAccount(bankAccountModelFactory())
                 .build();
     }
 
@@ -90,7 +90,7 @@ class Factory {
                 .creditLimit(MOCKED_CREDIT_LIMIT)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .bankAccountEntity(bankAccountEntityFactory())
+                .bankAccount(bankAccountEntityFactory())
                 .build();
     }
 
