@@ -16,6 +16,7 @@ import com.jazztech.cardholderapi.handler.exceptions.CardHolderAlreadyRegistered
 import com.jazztech.cardholderapi.handler.exceptions.ClientDoesNotCorrespondToCreditAnalysisException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotApprovedException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotFoundException;
+import com.jazztech.cardholderapi.handler.exceptions.InvalidCardHolderStatusException;
 import com.jazztech.cardholderapi.mapper.BankAccountMapper;
 import com.jazztech.cardholderapi.mapper.BankAccountMapperImpl;
 import com.jazztech.cardholderapi.mapper.CardHolderMapper;
@@ -23,6 +24,8 @@ import com.jazztech.cardholderapi.mapper.CardHolderMapperImpl;
 import com.jazztech.cardholderapi.model.CardHolderModel;
 import com.jazztech.cardholderapi.repository.CardHolderRepository;
 import com.jazztech.cardholderapi.repository.entity.CardHolderEntity;
+import com.jazztech.cardholderapi.utils.Status;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -54,6 +57,8 @@ class CardHolderServiceTest {
     private ArgumentCaptor<CardHolderEntity> cardHolderEntityArgumentCaptor;
     @Captor
     private ArgumentCaptor<UUID> creditAnalysisUUID;
+    @Captor
+    private ArgumentCaptor<Status> cardHolderStatus;
 
     @InjectMocks
     private CardHolderService cardHolderService;
@@ -115,6 +120,30 @@ class CardHolderServiceTest {
         final CreditAnalysisNotApprovedException exception =
                 assertThrows(CreditAnalysisNotApprovedException.class,
                         () -> cardHolderService.getCreditAnalysisById(cardHolderModelFactory()));
-        //assertEquals("The credit analysis %s wasn't approved".formatted(cardHolderModelFactory().creditAnalysisId()), exception.getMessage());
+        assertEquals("The credit analysis %s wasn't approved".formatted(cardHolderModelFactory().creditAnalysisId()), exception.getMessage());
+    }
+
+    @Test
+    void should_return_all_card_holders() {
+        when(cardHolderRepository.findAll()).thenReturn(List.of(cardHolderEntityFactory()));
+        final List<CardHolderResponse> cardHolderResponses = cardHolderService.getAllCardholders();
+        assertNotNull(cardHolderResponses);
+    }
+
+    @Test
+    void should_return_all_card_holders_by_status() {
+        when(cardHolderRepository.findAllByStatus(cardHolderStatus.capture())).thenReturn(List.of(cardHolderEntityFactory()));
+        final List<CardHolderResponse> cardHolderResponses = cardHolderService.getAllCardholdersByStatus("active");
+        assertNotNull(cardHolderResponses);
+        assertEquals(cardHolderStatus.getValue(), cardHolderResponses.get(0).status());
+    }
+
+    @Test
+    void should_throw_InvalidCardHolderStatusException() {
+//        when(cardHolderRepository.findAllByStatus(cardHolderStatus.capture())).thenThrow(IllegalArgumentException.class);
+        final InvalidCardHolderStatusException exception =
+                assertThrows(InvalidCardHolderStatusException.class, () -> cardHolderService.getAllCardholdersByStatus("dsadsa"));
+        assertEquals("The informed card holder status is invalid.", exception.getMessage());
+
     }
 }

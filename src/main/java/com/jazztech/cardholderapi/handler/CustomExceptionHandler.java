@@ -3,6 +3,7 @@ package com.jazztech.cardholderapi.handler;
 import com.jazztech.cardholderapi.handler.exceptions.CardHolderAlreadyRegisteredException;
 import com.jazztech.cardholderapi.handler.exceptions.ClientDoesNotCorrespondToCreditAnalysisException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotFoundException;
+import com.jazztech.cardholderapi.handler.exceptions.InvalidCardHolderStatusException;
 import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
-    private static final URI CARD_HOLDERS_URI = URI.create("/card-holders");
+    private static final URI CARD_HOLDERS_INSTANCE = URI.create("/card-holders");
 
     @ExceptionHandler(CreditAnalysisNotFoundException.class)
     public ProblemDetail creditAnalysisNotFoundExceptionHandler(CreditAnalysisNotFoundException e) {
@@ -22,7 +23,7 @@ public class CustomExceptionHandler {
         problemDetail.setTitle("Credit Analysis Not Found");
         problemDetail.setStatus(HttpStatus.NOT_FOUND);
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setInstance(CARD_HOLDERS_URI);
+        problemDetail.setInstance(CARD_HOLDERS_INSTANCE);
         return problemDetail;
     }
 
@@ -33,18 +34,18 @@ public class CustomExceptionHandler {
         problemDetail.setTitle("Client Doesn't Correspond To Credit Analysis");
         problemDetail.setStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setInstance(CARD_HOLDERS_URI);
+        problemDetail.setInstance(CARD_HOLDERS_INSTANCE);
         return problemDetail;
     }
 
     @ExceptionHandler(CardHolderAlreadyRegisteredException.class)
-    public ProblemDetail cardHolderAlreadyRegistredExceptionHandler(CardHolderAlreadyRegisteredException e) {
+    public ProblemDetail cardHolderAlreadyRegisteredExceptionHandler(CardHolderAlreadyRegisteredException e) {
         final ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         problemDetail.setType(URI.create("http://jazztech.com/already-exists"));
         problemDetail.setTitle("Card Holder Already Exists");
         problemDetail.setStatus(HttpStatus.UNPROCESSABLE_ENTITY);
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setInstance(CARD_HOLDERS_URI);
+        problemDetail.setInstance(CARD_HOLDERS_INSTANCE);
         return problemDetail;
     }
 
@@ -55,7 +56,7 @@ public class CustomExceptionHandler {
         problemDetail.setTitle("Invalid Arguments");
         problemDetail.setStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setDetail(e.getConstraintViolations().toString());
-        problemDetail.setInstance(CARD_HOLDERS_URI);
+        problemDetail.setInstance(CARD_HOLDERS_INSTANCE);
         return problemDetail;
     }
 
@@ -66,8 +67,18 @@ public class CustomExceptionHandler {
         problemDetail.setTitle("Invalid Arguments");
         problemDetail.setStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setDetail(e.getMessage());
-        problemDetail.setInstance(CARD_HOLDERS_URI);
+        problemDetail.setInstance(CARD_HOLDERS_INSTANCE);
         return problemDetail;
     }
 
+    @ExceptionHandler(InvalidCardHolderStatusException.class)
+    public ProblemDetail invalidStatusExceptionHandler(InvalidCardHolderStatusException e) {
+        final ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setType(URI.create("http://jazztech.com/invalid-status"));
+        problemDetail.setTitle("Invalid Status");
+        problemDetail.setStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setDetail(e.getMessage());
+        problemDetail.setInstance(CARD_HOLDERS_INSTANCE);
+        return problemDetail;
+    }
 }

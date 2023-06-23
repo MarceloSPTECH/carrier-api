@@ -8,12 +8,15 @@ import com.jazztech.cardholderapi.handler.exceptions.CardHolderAlreadyRegistered
 import com.jazztech.cardholderapi.handler.exceptions.ClientDoesNotCorrespondToCreditAnalysisException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotApprovedException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotFoundException;
+import com.jazztech.cardholderapi.handler.exceptions.InvalidCardHolderStatusException;
 import com.jazztech.cardholderapi.mapper.BankAccountMapper;
 import com.jazztech.cardholderapi.mapper.CardHolderMapper;
 import com.jazztech.cardholderapi.model.BankAccountModel;
 import com.jazztech.cardholderapi.model.CardHolderModel;
 import com.jazztech.cardholderapi.repository.CardHolderRepository;
 import com.jazztech.cardholderapi.repository.entity.CardHolderEntity;
+import com.jazztech.cardholderapi.utils.Status;
+import java.util.List;
 import java.util.Objects;
 import lombok.Generated;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +60,21 @@ public class CardHolderService {
             return cardHolderRepository.save(cardHolderEntity);
         } catch (DataIntegrityViolationException dive) {
             throw new CardHolderAlreadyRegisteredException("Card Holder already registered, check the data sent for registration");
+        }
+    }
+
+    public List<CardHolderResponse> getAllCardholders() {
+        final List<CardHolderEntity> cardHolderEntities = cardHolderRepository.findAll();
+        return cardHolderEntities.stream().map(cardHolderMapper::responseFromEntity).toList();
+    }
+
+    public List<CardHolderResponse> getAllCardholdersByStatus(String status) {
+        final String statusUpperCase = status.toUpperCase();
+        try {
+            final List<CardHolderEntity> cardHolderEntities = cardHolderRepository.findAllByStatus(Status.valueOf(statusUpperCase));
+            return cardHolderEntities.stream().map(cardHolderMapper::responseFromEntity).toList();
+        } catch (IllegalArgumentException e) {
+            throw new InvalidCardHolderStatusException("The informed card holder status is invalid.");
         }
     }
 }
