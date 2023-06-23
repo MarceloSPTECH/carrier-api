@@ -115,6 +115,6 @@ class CardHolderServiceTest {
         final CreditAnalysisNotApprovedException exception =
                 assertThrows(CreditAnalysisNotApprovedException.class,
                         () -> cardHolderService.getCreditAnalysisById(cardHolderModelFactory()));
-        //assertEquals("The credit analysis %s wasn't approved".formatted(cardHolderModelFactory().creditAnalysisId()), exception.getMessage());
+        assertEquals("The credit analysis %s wasn't approved".formatted(cardHolderModelFactory().creditAnalysisId()), exception.getMessage());
     }
 }
