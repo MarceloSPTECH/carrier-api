@@ -18,3 +18,15 @@ CREATE TABLE IF NOT EXISTS CARD_HOLDER (
     bank_account_id UUID,
     FOREIGN KEY (bank_account_id) REFERENCES BANK_ACCOUNT(id)
 );
+
+CREATE TABLE IF NOT EXISTS CREDIT_CARD (
+    id UUID PRIMARY KEY,
+    card_limit DOUBLE PRECISION,
+    card_number BIGINT,
+    cvv SMALLINT,
+    due_date DATE,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    card_holder_id UUID,
+    FOREIGN KEY (card_holder_id) REFERENCES CARD_HOLDER(id)
+);

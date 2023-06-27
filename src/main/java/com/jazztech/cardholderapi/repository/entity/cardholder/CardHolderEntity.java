@@ -1,4 +1,4 @@
-package com.jazztech.cardholderapi.repository.entity;
+package com.jazztech.cardholderapi.repository.entity.cardholder;
 
 import com.jazztech.cardholderapi.utils.Status;
 import jakarta.persistence.CascadeType;
@@ -25,10 +25,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Entity
 @Table(name = "CARD_HOLDER")
 @Immutable
-@Builder(toBuilder = true)
 @AllArgsConstructor
 @Getter
 @ToString
+@Builder(toBuilder = true)
 public class CardHolderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -1,4 +1,4 @@
-package com.jazztech.cardholderapi.repository.entity;
+package com.jazztech.cardholderapi.repository.entity.cardholder;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;

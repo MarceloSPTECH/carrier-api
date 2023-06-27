@@ -1,9 +1,9 @@
-package com.jazztech.cardholderapi.service;
+package com.jazztech.cardholderapi.service.cardholder;
 
-import static com.jazztech.cardholderapi.service.Factory.cardHolderEntityFactory;
-import static com.jazztech.cardholderapi.service.Factory.cardHolderModelFactory;
-import static com.jazztech.cardholderapi.service.Factory.cardHolderRequestFactory;
-import static com.jazztech.cardholderapi.service.Factory.creditAnalysisDTOFactory;
+import static com.jazztech.cardholderapi.service.cardholder.CardHolderFactory.cardHolderEntityFactory;
+import static com.jazztech.cardholderapi.service.cardholder.CardHolderFactory.cardHolderModelFactory;
+import static com.jazztech.cardholderapi.service.cardholder.CardHolderFactory.cardHolderRequestFactory;
+import static com.jazztech.cardholderapi.service.cardholder.CardHolderFactory.creditAnalysisDTOFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -11,21 +11,16 @@ import static org.mockito.Mockito.when;
 
 import com.jazztech.cardholderapi.apiclient.CreditAnalysisClient;
 import com.jazztech.cardholderapi.apiclient.dtos.CreditAnalysisDTO;
+import com.jazztech.cardholderapi.controller.request.CardHolderRequest;
 import com.jazztech.cardholderapi.controller.response.CardHolderResponse;
 import com.jazztech.cardholderapi.handler.exceptions.CardHolderAlreadyRegisteredException;
-import com.jazztech.cardholderapi.handler.exceptions.CardHolderNotFoundException;
 import com.jazztech.cardholderapi.handler.exceptions.ClientDoesNotCorrespondToCreditAnalysisException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotApprovedException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotFoundException;
-import com.jazztech.cardholderapi.handler.exceptions.InvalidCardHolderStatusException;
 import com.jazztech.cardholderapi.mapper.CardHolderMapper;
 import com.jazztech.cardholderapi.mapper.CardHolderMapperImpl;
-import com.jazztech.cardholderapi.model.CardHolderModel;
 import com.jazztech.cardholderapi.repository.CardHolderRepository;
-import com.jazztech.cardholderapi.repository.entity.CardHolderEntity;
-import com.jazztech.cardholderapi.utils.Status;
-import java.util.List;
-import java.util.Optional;
+import com.jazztech.cardholderapi.repository.entity.cardholder.CardHolderEntity;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -41,7 +36,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class CardHolderServiceTest {
+class CreateCardHolderServiceTest {
 
     @Mock
     private CreditAnalysisClient creditAnalysisClient;
@@ -54,21 +49,17 @@ class CardHolderServiceTest {
     @Captor
     private ArgumentCaptor<UUID> creditAnalysisUUID;
     @Captor
-    private ArgumentCaptor<UUID> cardHolderUUID;
-    @Captor
     private ArgumentCaptor<CardHolderEntity> cardHolderEntityArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<Status> cardHolderStatus;
 
     @InjectMocks
-    private CardHolderService cardHolderService;
+    private CreateCardHolderService createCardHolderService;
 
     @Test
     void should_create_card_holder() {
         when(creditAnalysisClient.getCreditAnalysisById(creditAnalysisUUID.capture())).thenReturn(creditAnalysisDTOFactory());
         when(cardHolderRepository.save(cardHolderEntityArgumentCaptor.capture())).thenReturn(cardHolderEntityFactory());
 
-        final CardHolderResponse cardHolderResponse = cardHolderService.createCardHolder(cardHolderRequestFactory());
+        final CardHolderResponse cardHolderResponse = createCardHolderService.createCardHolder(cardHolderRequestFactory());
         final CardHolderEntity cardHolderEntity = cardHolderEntityArgumentCaptor.getValue();
 
         assertNotNull(cardHolderResponse.id());
@@ -86,7 +77,7 @@ class CardHolderServiceTest {
     void should_throw_CardHolderAlreadyRegisteredException() {
         when(creditAnalysisClient.getCreditAnalysisById(creditAnalysisUUID.capture())).thenReturn(creditAnalysisDTOFactory());
         when(cardHolderRepository.save(cardHolderEntityArgumentCaptor.capture())).thenThrow(DataIntegrityViolationException.class);
-        assertThrows(CardHolderAlreadyRegisteredException.class, () -> cardHolderService.createCardHolder(cardHolderRequestFactory()),
+        assertThrows(CardHolderAlreadyRegisteredException.class, () -> createCardHolderService.createCardHolder(cardHolderRequestFactory()),
                 "Card Holder already registered, check the data sent for registration");
 
     }
@@ -96,19 +87,20 @@ class CardHolderServiceTest {
         final CreditAnalysisDTO creditAnalysisDTO = creditAnalysisDTOFactory().toBuilder().id(null).build();
         when(creditAnalysisClient.getCreditAnalysisById(creditAnalysisUUID.capture())).thenReturn(creditAnalysisDTO);
         final CreditAnalysisNotFoundException exception =
-                assertThrows(CreditAnalysisNotFoundException.class, () -> cardHolderService.getCreditAnalysisById(cardHolderModelFactory()));
+                assertThrows(CreditAnalysisNotFoundException.class, () -> createCardHolderService.createCardHolder(cardHolderRequestFactory()));
         assertEquals("Credit analysis not found by ID %s".formatted(cardHolderModelFactory().creditAnalysisId()), exception.getMessage());
 
     }
 
     @Test
     void should_throw_ClientDoesNotCorrespondToCreditAnalysisException() {
-        final CardHolderModel cardHolderModelModified = cardHolderModelFactory().toBuilder().clientId(UUID.randomUUID()).build();
+        final CardHolderRequest cardHolderRequestModified = cardHolderRequestFactory().toBuilder().clientId(UUID.randomUUID()).build();
         when(creditAnalysisClient.getCreditAnalysisById(creditAnalysisUUID.capture())).thenReturn(creditAnalysisDTOFactory());
-        final ClientDoesNotCorrespondToCreditAnalysisException exception =
-                assertThrows(ClientDoesNotCorrespondToCreditAnalysisException.class,
-                        () -> cardHolderService.getCreditAnalysisById(cardHolderModelModified));
-        assertEquals("clientId %s does not correspond to credit analysisId %s".formatted(cardHolderModelModified.clientId(),
+
+        final ClientDoesNotCorrespondToCreditAnalysisException exception = assertThrows(ClientDoesNotCorrespondToCreditAnalysisException.class,
+                () -> createCardHolderService.createCardHolder(cardHolderRequestModified));
+
+        assertEquals("clientId %s does not correspond to credit analysisId %s".formatted(cardHolderRequestModified.clientId(),
                 creditAnalysisDTOFactory().id()), exception.getMessage());
 
     }
@@ -118,49 +110,7 @@ class CardHolderServiceTest {
         final CreditAnalysisDTO creditAnalysisDTOModified = creditAnalysisDTOFactory().toBuilder().approved(false).build();
         when(creditAnalysisClient.getCreditAnalysisById(creditAnalysisUUID.capture())).thenReturn(creditAnalysisDTOModified);
         final CreditAnalysisNotApprovedException exception =
-                assertThrows(CreditAnalysisNotApprovedException.class,
-                        () -> cardHolderService.getCreditAnalysisById(cardHolderModelFactory()));
+                assertThrows(CreditAnalysisNotApprovedException.class, () -> createCardHolderService.createCardHolder(cardHolderRequestFactory()));
         assertEquals("The credit analysis %s wasn't approved".formatted(cardHolderModelFactory().creditAnalysisId()), exception.getMessage());
     }
-
-    @Test
-    void should_return_all_card_holders() {
-        when(cardHolderRepository.findAll()).thenReturn(List.of(cardHolderEntityFactory()));
-        final List<CardHolderResponse> cardHolderResponses = cardHolderService.getAllCardholders();
-        assertNotNull(cardHolderResponses);
-    }
-
-    @Test
-    void should_return_all_card_holders_by_status() {
-        when(cardHolderRepository.findAllByStatus(cardHolderStatus.capture())).thenReturn(List.of(cardHolderEntityFactory()));
-        final List<CardHolderResponse> cardHolderResponses = cardHolderService.getAllCardholdersByStatus("active");
-        assertNotNull(cardHolderResponses);
-        assertEquals(cardHolderStatus.getValue(), cardHolderResponses.get(0).status());
-    }
-
-    @Test
-    void should_throw_InvalidCardHolderStatusException() {
-//        when(cardHolderRepository.findAllByStatus(cardHolderStatus.capture())).thenThrow(IllegalArgumentException.class);
-        final InvalidCardHolderStatusException exception =
-                assertThrows(InvalidCardHolderStatusException.class, () -> cardHolderService.getAllCardholdersByStatus("dsadsa"));
-        assertEquals("The informed card holder status is invalid.", exception.getMessage());
-
-    }
-
-    @Test
-    void should_return_a_card_holder_if_it_exists_by_id() {
-        when(cardHolderRepository.findById(cardHolderUUID.capture())).thenReturn(Optional.of(cardHolderEntityFactory()));
-        final CardHolderResponse creditAnalysisById = cardHolderService.getCardHolderById(cardHolderEntityFactory().getId());
-        assertEquals(creditAnalysisById.id(), cardHolderUUID.getValue());
-    }
-
-    @Test
-    void should_throw_CardHolderNotFoundException_if_it_does_not_exist_by_id() {
-        final UUID uuid = UUID.randomUUID();
-        when(cardHolderRepository.findById(cardHolderUUID.capture())).thenReturn(Optional.empty());
-        CardHolderNotFoundException exception =
-                assertThrows(CardHolderNotFoundException.class, () -> cardHolderService.getCardHolderById(uuid));
-        assertEquals("Card Holder not found by id %s".formatted(uuid), exception.getMessage());
-    }
-
 }

@@ -1,4 +1,4 @@
-package com.jazztech.cardholderapi.model;
+package com.jazztech.cardholderapi.model.cardholder;
 
 import lombok.Builder;
 
