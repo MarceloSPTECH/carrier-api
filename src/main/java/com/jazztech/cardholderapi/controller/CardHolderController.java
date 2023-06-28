@@ -63,4 +63,10 @@ public class CardHolderController {
     public List<CreditCardResponse> creditCardResponses(@PathVariable UUID cardHolderId) {
         return searchCreditCardService.getAllCardsByCardHolderId(cardHolderId);
     }
+
+    @GetMapping("/{cardHolderId}/cards/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public CreditCardResponse getCreditCardById(@PathVariable UUID cardHolderId, @PathVariable UUID id) {
+        return searchCreditCardService.getCreditCardById(cardHolderId, id);
+    }
 }

@@ -4,6 +4,7 @@ import com.jazztech.cardholderapi.handler.exceptions.CardHolderAlreadyRegistered
 import com.jazztech.cardholderapi.handler.exceptions.CardHolderNotFoundException;
 import com.jazztech.cardholderapi.handler.exceptions.ClientDoesNotCorrespondToCreditAnalysisException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotFoundException;
+import com.jazztech.cardholderapi.handler.exceptions.CreditCardNotFoundException;
 import com.jazztech.cardholderapi.handler.exceptions.InvalidCardHolderStatusException;
 import com.jazztech.cardholderapi.handler.exceptions.InvalidCreditLimitException;
 import com.jazztech.cardholderapi.handler.exceptions.NoCreditCardsFoundException;
@@ -109,4 +110,13 @@ public class CustomExceptionHandler {
         problemDetail.setTitle("Unavailable Credit");
         return problemDetail;
     }
+
+    @ExceptionHandler(CreditCardNotFoundException.class)
+    public ProblemDetail creditCardNotFoundExceptionHandler(CreditCardNotFoundException e) {
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getLocalizedMessage());
+        problemDetail.setType(NOT_FOUND_URI);
+        problemDetail.setTitle("Card Not Found");
+        return problemDetail;
+    }
+
 }

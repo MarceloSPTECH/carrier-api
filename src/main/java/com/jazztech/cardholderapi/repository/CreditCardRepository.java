@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CreditCardRepository extends JpaRepository<CreditCardEntity, UUID> {
     List<CreditCardEntity> findAllByCardHolderId(UUID cardHolderId);
+
+    CreditCardEntity findByIdAndCardHolderId(UUID id, UUID cardHolderId);
 }
