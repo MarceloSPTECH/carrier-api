@@ -7,15 +7,16 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.Builder;
 
-@Builder(toBuilder = true)
-public record CreditCardRequest(
-        @NotNull(message = "cardHolderId cannot be null.")
-        UUID cardHolderId,
-        @NotNull(message = "limit cannot be null.")
-        @Positive(message = "The requested credit card limit is invalid.")
-        BigDecimal limit
-) {
-    public CreditCardRequest(UUID cardHolderId, BigDecimal limit) {
+public record CreditCardRequest(UUID cardHolderId, BigDecimal limit) {
+
+    @Builder(toBuilder = true)
+    public CreditCardRequest(
+            @NotNull(message = "cardHolderId cannot be null.")
+            UUID cardHolderId,
+            @NotNull(message = "limit cannot be null.")
+            @Positive(message = "The requested credit card limit is invalid.")
+            BigDecimal limit
+    ) {
         this.cardHolderId = cardHolderId;
         this.limit = limit;
         ValidationCustom.validator(this);

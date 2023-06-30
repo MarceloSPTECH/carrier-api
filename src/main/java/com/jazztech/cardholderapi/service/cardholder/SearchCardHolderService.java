@@ -1,11 +1,11 @@
 package com.jazztech.cardholderapi.service.cardholder;
 
 import com.jazztech.cardholderapi.controller.response.CardHolderResponse;
-import com.jazztech.cardholderapi.handler.exceptions.CardHolderNotFoundException;
 import com.jazztech.cardholderapi.handler.exceptions.InvalidCardHolderStatusException;
 import com.jazztech.cardholderapi.mapper.CardHolderMapper;
 import com.jazztech.cardholderapi.repository.CardHolderRepository;
 import com.jazztech.cardholderapi.repository.entity.cardholder.CardHolderEntity;
+import com.jazztech.cardholderapi.service.ServiceVerifications;
 import com.jazztech.cardholderapi.utils.Status;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class SearchCardHolderService {
     private final CardHolderMapper cardHolderMapper;
     private final CardHolderRepository cardHolderRepository;
+    private final ServiceVerifications serviceVerifications;
 
     public List<CardHolderResponse> getAllCardholders() {
         final List<CardHolderEntity> cardHolderEntities = cardHolderRepository.findAll();
@@ -34,10 +35,7 @@ public class SearchCardHolderService {
     }
 
     public CardHolderResponse getCardHolderById(UUID id) {
-        final CardHolderEntity cardHolderEntity =
-                cardHolderRepository.findById(id).orElseThrow(
-                        () -> new CardHolderNotFoundException("Card Holder not found by id %s".formatted(id))
-                );
+        final CardHolderEntity cardHolderEntity = serviceVerifications.getCardHolderById(id);
         return cardHolderMapper.responseFromEntity(cardHolderEntity);
     }
 }

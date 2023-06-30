@@ -20,4 +20,6 @@ public interface CreditCardMapper {
     CreditCardResponse responseFromEntity(CreditCardEntity creditCardEntity);
 
     CreditCardModel modelFromResponse(CreditCardResponse creditCardResponse);
+
+    CreditCardModel modelFromEntity(CreditCardEntity creditCardEntity);
 }
