@@ -6,8 +6,8 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import java.util.Set;
 
-public final class CustomValidation {
-    private CustomValidation() {
+public final class ValidationCustom {
+    private ValidationCustom() {
     }
 
     public static <T> T validator(T t) {
