@@ -1,6 +1,5 @@
 package com.jazztech.cardholderapi.repository.entity;
 
-import com.jazztech.cardholderapi.utils.Status;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -54,5 +53,10 @@ public class CardHolderEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_account_id", referencedColumnName = "id")
     BankAccountEntity bankAccount;
+
+    public enum Status {
+        ACTIVE,
+        INACTIVE,
+    }
 
 }
