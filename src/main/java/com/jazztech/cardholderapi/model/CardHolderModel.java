@@ -1,6 +1,5 @@
 package com.jazztech.cardholderapi.model;
 
-import com.jazztech.cardholderapi.utils.Status;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.Builder;
@@ -12,5 +11,10 @@ public record CardHolderModel(UUID clientId, UUID creditAnalysisId, Status statu
                 .status(Status.ACTIVE)
                 .creditLimit(approvedLimit)
                 .build();
+    }
+
+    public enum Status {
+        ACTIVE,
+        INACTIVE,
     }
 }
