@@ -13,60 +13,46 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
-    private static final URI CARD_HOLDERS_URI = URI.create("/card-holders");
+
+    private static final URI NOT_FOUND_URI = URI.create("http://jazztech.com/not-found");
 
     @ExceptionHandler(CreditAnalysisNotFoundException.class)
     public ProblemDetail creditAnalysisNotFoundExceptionHandler(CreditAnalysisNotFoundException e) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-        problemDetail.setType(URI.create("http://jazztech.com/credit-analysis-not-found"));
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getLocalizedMessage());
+        problemDetail.setType(NOT_FOUND_URI);
         problemDetail.setTitle("Credit Analysis Not Found");
-        problemDetail.setStatus(HttpStatus.NOT_FOUND);
-        problemDetail.setDetail(e.getMessage());
-        problemDetail.setInstance(CARD_HOLDERS_URI);
         return problemDetail;
     }
 
     @ExceptionHandler(ClientDoesNotCorrespondToCreditAnalysisException.class)
     public ProblemDetail clientDoesNotCorrespondToCreditAnalysisExceptionHandler(ClientDoesNotCorrespondToCreditAnalysisException e) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
         problemDetail.setType(URI.create("http://jazztech.com/client-does-not-correspond-credit-analysis"));
         problemDetail.setTitle("Client Doesn't Correspond To Credit Analysis");
-        problemDetail.setStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setDetail(e.getMessage());
-        problemDetail.setInstance(CARD_HOLDERS_URI);
         return problemDetail;
     }
 
     @ExceptionHandler(CardHolderAlreadyRegisteredException.class)
-    public ProblemDetail cardHolderAlreadyRegistredExceptionHandler(CardHolderAlreadyRegisteredException e) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+    public ProblemDetail cardHolderAlreadyRegisteredExceptionHandler(CardHolderAlreadyRegisteredException e) {
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, e.getLocalizedMessage());
         problemDetail.setType(URI.create("http://jazztech.com/already-exists"));
         problemDetail.setTitle("Card Holder Already Exists");
-        problemDetail.setStatus(HttpStatus.UNPROCESSABLE_ENTITY);
-        problemDetail.setDetail(e.getMessage());
-        problemDetail.setInstance(CARD_HOLDERS_URI);
         return problemDetail;
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ProblemDetail constraintViolationExceptionHandler(ConstraintViolationException e) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE, e.getLocalizedMessage());
         problemDetail.setType(URI.create("http://jazztech.com/invalid-argument"));
-        problemDetail.setTitle("Invalid Arguments");
-        problemDetail.setStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setDetail(e.getConstraintViolations().toString());
-        problemDetail.setInstance(CARD_HOLDERS_URI);
+        problemDetail.setTitle("Invalid Fields");
         return problemDetail;
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE, e.getLocalizedMessage());
         problemDetail.setType(URI.create("http://jazztech.com/invalid-argument"));
-        problemDetail.setTitle("Invalid Arguments");
-        problemDetail.setStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setDetail(e.getMessage());
-        problemDetail.setInstance(CARD_HOLDERS_URI);
+        problemDetail.setTitle("Invalid Fields");
         return problemDetail;
     }
 

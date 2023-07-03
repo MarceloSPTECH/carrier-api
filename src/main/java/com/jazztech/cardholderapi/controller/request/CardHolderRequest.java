@@ -1,6 +1,6 @@
 package com.jazztech.cardholderapi.controller.request;
 
-import com.jazztech.cardholderapi.utils.CustomValidation;
+import com.jazztech.cardholderapi.utils.ValidationCustom;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.util.UUID;
@@ -12,30 +12,34 @@ public record CardHolderRequest(
         UUID clientId,
         @NotNull(message = "creditAnalysisId cannot be null")
         UUID creditAnalysisId,
-        BankAccountRequest bankAccountRequest
+        BankAccountRequest bankAccount
 ) {
 
-    public CardHolderRequest(UUID clientId, UUID creditAnalysisId, BankAccountRequest bankAccountRequest) {
+    public CardHolderRequest(UUID clientId, UUID creditAnalysisId, BankAccountRequest bankAccount) {
         this.clientId = clientId;
         this.creditAnalysisId = creditAnalysisId;
-        this.bankAccountRequest = bankAccountRequest;
-        CustomValidation.validator(this);
+        this.bankAccount = bankAccount;
+        ValidationCustom.validator(this);
     }
 
     @Builder(toBuilder = true)
     public record BankAccountRequest(
-            @Pattern(regexp = "\\d{8}-\\d", message = "Invalid account")
+            @NotNull(message = "account cannot be null")
+            @Pattern(regexp = "\\d{8}-\\d", message = "Invalid account, must be 'XXXXXXXX-X'")
             String account,
-            @Pattern(regexp = "\\d{4}", message = "Invalid agency")
+            @NotNull(message = "agency cannot be null")
+            @Pattern(regexp = "\\d{4}", message = "Invalid agency, must be 'XXXX'")
             String agency,
-            @Pattern(regexp = "\\d{3}", message = "Invalid bankCode")
-            String bankCode) {
+            @NotNull(message = "bankCode cannot be null")
+            @Pattern(regexp = "\\d{3}", message = "Invalid bankCode, must be 'XXX'")
+            String bankCode
+    ) {
 
         public BankAccountRequest(String account, String agency, String bankCode) {
             this.account = account;
             this.agency = agency;
             this.bankCode = bankCode;
-            CustomValidation.validator(this);
+            ValidationCustom.validator(this);
         }
     }
 }

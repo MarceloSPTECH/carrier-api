@@ -8,9 +8,7 @@ import com.jazztech.cardholderapi.handler.exceptions.CardHolderAlreadyRegistered
 import com.jazztech.cardholderapi.handler.exceptions.ClientDoesNotCorrespondToCreditAnalysisException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotApprovedException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotFoundException;
-import com.jazztech.cardholderapi.mapper.BankAccountMapper;
 import com.jazztech.cardholderapi.mapper.CardHolderMapper;
-import com.jazztech.cardholderapi.model.BankAccountModel;
 import com.jazztech.cardholderapi.model.CardHolderModel;
 import com.jazztech.cardholderapi.repository.CardHolderRepository;
 import com.jazztech.cardholderapi.repository.entity.CardHolderEntity;
@@ -25,15 +23,13 @@ import org.springframework.stereotype.Service;
 public class CardHolderService {
     private final CreditAnalysisClient creditAnalysisClient;
     private final CardHolderMapper cardHolderMapper;
-    private final BankAccountMapper bankAccountMapper;
     private final CardHolderRepository cardHolderRepository;
 
     @Generated
     public CardHolderResponse createCardHolder(CardHolderRequest cardHolderRequest) {
-        final BankAccountModel bankAccountModel = bankAccountMapper.modelFromRequest(cardHolderRequest.bankAccountRequest());
         final CardHolderModel cardHolderModel = cardHolderMapper.modelFromRequest(cardHolderRequest);
         final CreditAnalysisDTO creditAnalysisDTO = getCreditAnalysisById(cardHolderModel);
-        final CardHolderModel cardHolderModelUpdated = cardHolderModel.updateModel(bankAccountModel, creditAnalysisDTO.approvedLimit());
+        final CardHolderModel cardHolderModelUpdated = cardHolderModel.updateStatusAndCreditLimit(creditAnalysisDTO.approvedLimit());
         final CardHolderEntity cardHolderEntity = cardHolderMapper.entityFromModel(cardHolderModelUpdated);
         final CardHolderEntity cardHolderEntitySaved = saveClient(cardHolderEntity);
         return cardHolderMapper.responseFromEntity(cardHolderEntitySaved);

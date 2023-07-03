@@ -11,16 +11,14 @@ import static org.mockito.Mockito.when;
 
 import com.jazztech.cardholderapi.apiclient.CreditAnalysisClient;
 import com.jazztech.cardholderapi.apiclient.dtos.CreditAnalysisDTO;
+import com.jazztech.cardholderapi.controller.request.CardHolderRequest;
 import com.jazztech.cardholderapi.controller.response.CardHolderResponse;
 import com.jazztech.cardholderapi.handler.exceptions.CardHolderAlreadyRegisteredException;
 import com.jazztech.cardholderapi.handler.exceptions.ClientDoesNotCorrespondToCreditAnalysisException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotApprovedException;
 import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotFoundException;
-import com.jazztech.cardholderapi.mapper.BankAccountMapper;
-import com.jazztech.cardholderapi.mapper.BankAccountMapperImpl;
 import com.jazztech.cardholderapi.mapper.CardHolderMapper;
 import com.jazztech.cardholderapi.mapper.CardHolderMapperImpl;
-import com.jazztech.cardholderapi.model.CardHolderModel;
 import com.jazztech.cardholderapi.repository.CardHolderRepository;
 import com.jazztech.cardholderapi.repository.entity.CardHolderEntity;
 import java.util.UUID;
@@ -46,14 +44,12 @@ class CardHolderServiceTest {
     private CardHolderRepository cardHolderRepository;
 
     @Spy
-    private CardHolderMapper cardHolderMapper = new CardHolderMapperImpl();
-    @Spy
-    private BankAccountMapper bankAccountMapper = new BankAccountMapperImpl();
+    private CardHolderMapperImpl cardHolderMapper;
 
     @Captor
-    private ArgumentCaptor<CardHolderEntity> cardHolderEntityArgumentCaptor;
-    @Captor
     private ArgumentCaptor<UUID> creditAnalysisUUID;
+    @Captor
+    private ArgumentCaptor<CardHolderEntity> cardHolderEntityArgumentCaptor;
 
     @InjectMocks
     private CardHolderService cardHolderService;
@@ -91,19 +87,20 @@ class CardHolderServiceTest {
         final CreditAnalysisDTO creditAnalysisDTO = creditAnalysisDTOFactory().toBuilder().id(null).build();
         when(creditAnalysisClient.getCreditAnalysisById(creditAnalysisUUID.capture())).thenReturn(creditAnalysisDTO);
         final CreditAnalysisNotFoundException exception =
-                assertThrows(CreditAnalysisNotFoundException.class, () -> cardHolderService.getCreditAnalysisById(cardHolderModelFactory()));
+                assertThrows(CreditAnalysisNotFoundException.class, () -> cardHolderService.createCardHolder(cardHolderRequestFactory()));
         assertEquals("Credit analysis not found by ID %s".formatted(cardHolderModelFactory().creditAnalysisId()), exception.getMessage());
 
     }
 
     @Test
     void should_throw_ClientDoesNotCorrespondToCreditAnalysisException() {
-        final CardHolderModel cardHolderModelModified = cardHolderModelFactory().toBuilder().clientId(UUID.randomUUID()).build();
+        final CardHolderRequest cardHolderRequestModified = cardHolderRequestFactory().toBuilder().clientId(UUID.randomUUID()).build();
         when(creditAnalysisClient.getCreditAnalysisById(creditAnalysisUUID.capture())).thenReturn(creditAnalysisDTOFactory());
-        final ClientDoesNotCorrespondToCreditAnalysisException exception =
-                assertThrows(ClientDoesNotCorrespondToCreditAnalysisException.class,
-                        () -> cardHolderService.getCreditAnalysisById(cardHolderModelModified));
-        assertEquals("clientId %s does not correspond to credit analysisId %s".formatted(cardHolderModelModified.clientId(),
+
+        final ClientDoesNotCorrespondToCreditAnalysisException exception = assertThrows(ClientDoesNotCorrespondToCreditAnalysisException.class,
+                () -> cardHolderService.createCardHolder(cardHolderRequestModified));
+
+        assertEquals("clientId %s does not correspond to credit analysisId %s".formatted(cardHolderRequestModified.clientId(),
                 creditAnalysisDTOFactory().id()), exception.getMessage());
 
     }
@@ -113,8 +110,7 @@ class CardHolderServiceTest {
         final CreditAnalysisDTO creditAnalysisDTOModified = creditAnalysisDTOFactory().toBuilder().approved(false).build();
         when(creditAnalysisClient.getCreditAnalysisById(creditAnalysisUUID.capture())).thenReturn(creditAnalysisDTOModified);
         final CreditAnalysisNotApprovedException exception =
-                assertThrows(CreditAnalysisNotApprovedException.class,
-                        () -> cardHolderService.getCreditAnalysisById(cardHolderModelFactory()));
+                assertThrows(CreditAnalysisNotApprovedException.class, () -> cardHolderService.createCardHolder(cardHolderRequestFactory()));
         assertEquals("The credit analysis %s wasn't approved".formatted(cardHolderModelFactory().creditAnalysisId()), exception.getMessage());
     }
 }
