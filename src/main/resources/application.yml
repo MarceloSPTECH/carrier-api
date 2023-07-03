@@ -10,7 +10,7 @@ spring:
         config:
           creditAnalysisClient:
             connectTimeout: 3000
-            readTimeout: 500
+            readTimeout: 1000
             loggerLevel: BASIC
             dismiss404: true
 

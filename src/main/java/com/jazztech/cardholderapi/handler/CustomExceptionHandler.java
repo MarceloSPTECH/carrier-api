@@ -16,11 +16,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class CustomExceptionHandler {
 
+    private static final URI NOT_FOUND_URI = URI.create("http://jazztech.com/not-found");
+
     @ExceptionHandler(CreditAnalysisNotFoundException.class)
     public ProblemDetail creditAnalysisNotFoundExceptionHandler(CreditAnalysisNotFoundException e) {
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getLocalizedMessage());
-        problemDetail.setType(URI.create("http://jazztech.com/credit-analysis-not-found"));
+        problemDetail.setType(NOT_FOUND_URI);
         problemDetail.setTitle("Credit Analysis Not Found");
+        problemDetail.setStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setDetail(e.getMessage());
+        problemDetail.setInstance(CARD_HOLDERS_INSTANCE);
         return problemDetail;
     }
 
@@ -42,24 +47,24 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ProblemDetail constraintViolationExceptionHandler(ConstraintViolationException e) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE, e.getLocalizedMessage());
         problemDetail.setType(URI.create("http://jazztech.com/invalid-argument"));
-        problemDetail.setTitle("Invalid Arguments");
+        problemDetail.setTitle("Invalid Fields");
         return problemDetail;
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE, e.getLocalizedMessage());
         problemDetail.setType(URI.create("http://jazztech.com/invalid-argument"));
-        problemDetail.setTitle("Invalid Arguments");
+        problemDetail.setTitle("Invalid Fields");
         return problemDetail;
     }
 
     @ExceptionHandler(InvalidCardHolderStatusException.class)
     public ProblemDetail invalidStatusExceptionHandler(InvalidCardHolderStatusException e) {
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
-        problemDetail.setType(URI.create("http://jazztech.com/invalid-card-holder-status"));
+        problemDetail.setType(URI.create("http://jazztech.com/invalid-status"));
         problemDetail.setTitle("Invalid Status");
         return problemDetail;
     }
