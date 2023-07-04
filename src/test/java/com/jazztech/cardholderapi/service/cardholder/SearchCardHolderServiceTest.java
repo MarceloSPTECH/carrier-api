@@ -10,7 +10,7 @@ import com.jazztech.cardholderapi.handler.exceptions.InvalidCardHolderStatusExce
 import com.jazztech.cardholderapi.mapper.CardHolderMapper;
 import com.jazztech.cardholderapi.mapper.CardHolderMapperImpl;
 import com.jazztech.cardholderapi.repository.CardHolderRepository;
-import com.jazztech.cardholderapi.utils.Status;
+import com.jazztech.cardholderapi.repository.entity.cardholder.CardHolderEntity;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,12 +32,12 @@ class SearchCardHolderServiceTest {
     private CardHolderRepository cardHolderRepository;
 
     @Spy
-    private CardHolderMapper cardHolderMapper = new CardHolderMapperImpl();
+    private CardHolderMapperImpl cardHolderMapper;
 
     @Captor
     private ArgumentCaptor<UUID> cardHolderUUID;
     @Captor
-    private ArgumentCaptor<Status> cardHolderStatus;
+    private ArgumentCaptor<CardHolderEntity.Status> cardHolderStatus;
 
     @InjectMocks
     private SearchCardHolderService searchCardHolderService;
@@ -55,7 +55,7 @@ class SearchCardHolderServiceTest {
         when(cardHolderRepository.findAllByStatus(cardHolderStatus.capture())).thenReturn(List.of(cardHolderEntityFactory()));
         final List<CardHolderResponse> cardHolderResponses = searchCardHolderService.getAllCardholdersByStatus("active");
         assertNotNull(cardHolderResponses);
-        assertEquals(cardHolderStatus.getValue(), cardHolderResponses.get(0).status());
+        assertEquals(CardHolderResponse.Status.ACTIVE, cardHolderResponses.get(0).status());
     }
 
     @Test

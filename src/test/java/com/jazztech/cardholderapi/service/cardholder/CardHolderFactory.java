@@ -7,7 +7,6 @@ import com.jazztech.cardholderapi.model.cardholder.BankAccountModel;
 import com.jazztech.cardholderapi.model.cardholder.CardHolderModel;
 import com.jazztech.cardholderapi.repository.entity.cardholder.BankAccountEntity;
 import com.jazztech.cardholderapi.repository.entity.cardholder.CardHolderEntity;
-import com.jazztech.cardholderapi.utils.Status;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
