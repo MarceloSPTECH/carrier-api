@@ -1,9 +1,7 @@
 package com.jazztech.cardholderapi.service.cardholder;
 
 import static com.jazztech.cardholderapi.service.cardholder.CardHolderFactory.cardHolderEntityFactory;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import com.jazztech.cardholderapi.controller.response.CardHolderResponse;
@@ -12,7 +10,6 @@ import com.jazztech.cardholderapi.mapper.CardHolderMapperImpl;
 import com.jazztech.cardholderapi.repository.CardHolderRepository;
 import com.jazztech.cardholderapi.repository.entity.cardholder.CardHolderEntity;
 import com.jazztech.cardholderapi.service.ServiceVerifications;
-import com.jazztech.cardholderapi.utils.Status;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -42,7 +39,7 @@ class SearchCardHolderServiceTest {
     @Captor
     private ArgumentCaptor<UUID> uuidCaptor;
     @Captor
-    private ArgumentCaptor<Status> cardHolderStatus;
+    private ArgumentCaptor<CardHolderEntity.Status> cardHolderStatus;
 
     @InjectMocks
     private SearchCardHolderService searchCardHolderService;
@@ -65,7 +62,7 @@ class SearchCardHolderServiceTest {
         when(cardHolderRepository.findAllByStatus(cardHolderStatus.capture())).thenReturn(Collections.singletonList(cardHolderEntityFactory()));
         final List<CardHolderResponse> cardHolderResponses = searchCardHolderService.getAllCardholdersByStatus("active");
         assertNotNull(cardHolderResponses);
-        assertEquals(cardHolderStatus.getValue(), cardHolderResponses.get(0).status());
+        assertEquals(CardHolderResponse.Status.ACTIVE, cardHolderResponses.get(0).status());
     }
 
     @Test

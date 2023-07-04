@@ -6,7 +6,6 @@ import com.jazztech.cardholderapi.mapper.CardHolderMapper;
 import com.jazztech.cardholderapi.repository.CardHolderRepository;
 import com.jazztech.cardholderapi.repository.entity.cardholder.CardHolderEntity;
 import com.jazztech.cardholderapi.service.ServiceVerifications;
-import com.jazztech.cardholderapi.utils.Status;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -24,10 +23,11 @@ public class SearchCardHolderService {
         return cardHolderEntities.stream().map(cardHolderMapper::responseFromEntity).toList();
     }
 
-    public List<CardHolderResponse> getAllCardholdersByStatus(String status) {
-        final String statusUpperCase = status.toUpperCase();
+    public List<CardHolderResponse> getAllCardholdersByStatus(String statusRequest) {
+        final String statusUpperCase = statusRequest.toUpperCase();
         try {
-            final List<CardHolderEntity> cardHolderEntities = cardHolderRepository.findAllByStatus(Status.valueOf(statusUpperCase));
+            final CardHolderEntity.Status status = CardHolderEntity.Status.valueOf(statusUpperCase);
+            final List<CardHolderEntity> cardHolderEntities = cardHolderRepository.findAllByStatus(status);
             return cardHolderEntities.stream().map(cardHolderMapper::responseFromEntity).toList();
         } catch (IllegalArgumentException e) {
             throw new InvalidCardHolderStatusException("The informed card holder status is invalid.");
