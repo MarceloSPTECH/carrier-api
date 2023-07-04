@@ -1,6 +1,5 @@
 package com.jazztech.cardholderapi.repository.entity.cardholder;
 
-import com.jazztech.cardholderapi.utils.Status;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +16,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Immutable;
@@ -26,6 +26,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Table(name = "CARD_HOLDER")
 @Immutable
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @ToString
 @Builder(toBuilder = true)
@@ -53,7 +54,9 @@ public class CardHolderEntity {
     @JoinColumn(name = "bank_account_id", referencedColumnName = "id")
     BankAccountEntity bankAccount;
 
-
-    private CardHolderEntity() {
+    public enum Status {
+        ACTIVE,
+        INACTIVE,
     }
+
 }

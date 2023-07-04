@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/card-holders")
+@RequestMapping(path = "v1.0/card-holders")
 @RequiredArgsConstructor
 public class CardHolderController {
     private final CreateCardHolderService createCardHolderService;
