@@ -44,12 +44,14 @@ class CreateCardHolderServiceTest {
     private CardHolderRepository cardHolderRepository;
 
     @Spy
-    private CardHolderMapper cardHolderMapper = new CardHolderMapperImpl();
+    private CardHolderMapperImpl cardHolderMapper;
 
     @Captor
     private ArgumentCaptor<UUID> creditAnalysisUUID;
     @Captor
     private ArgumentCaptor<CardHolderEntity> cardHolderEntityArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<CardHolderEntity.Status> cardHolderStatus;
 
     @InjectMocks
     private CreateCardHolderService createCardHolderService;

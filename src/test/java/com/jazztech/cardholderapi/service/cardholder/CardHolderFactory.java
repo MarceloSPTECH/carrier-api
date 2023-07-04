@@ -72,7 +72,7 @@ public class CardHolderFactory {
         return CardHolderModel.builder()
                 .clientId(MOCKED_UUID)
                 .creditAnalysisId(MOCKED_UUID)
-                .status(Status.ACTIVE)
+                .status(CardHolderModel.Status.ACTIVE)
                 .creditLimit(MOCKED_CREDIT_LIMIT)
                 .bankAccount(bankAccountModelFactory())
                 .build();
@@ -84,7 +84,7 @@ public class CardHolderFactory {
                 .id(MOCKED_UUID)
                 .clientId(MOCKED_UUID)
                 .creditAnalysisId(MOCKED_UUID)
-                .status(Status.ACTIVE)
+                .status(CardHolderEntity.Status.ACTIVE)
                 .creditLimit(MOCKED_CREDIT_LIMIT)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
