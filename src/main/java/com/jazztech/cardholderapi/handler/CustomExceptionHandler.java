@@ -47,7 +47,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ProblemDetail constraintViolationExceptionHandler(ConstraintViolationException e) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE, e.getLocalizedMessage());
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
         problemDetail.setType(URI.create("http://jazztech.com/invalid-argument"));
         problemDetail.setTitle("Invalid Fields");
         return problemDetail;
@@ -55,7 +55,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ProblemDetail httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e) {
-        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE, e.getLocalizedMessage());
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getLocalizedMessage());
         problemDetail.setType(URI.create("http://jazztech.com/invalid-argument"));
         problemDetail.setTitle("Invalid Fields");
         return problemDetail;

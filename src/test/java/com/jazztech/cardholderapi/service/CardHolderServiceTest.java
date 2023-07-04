@@ -21,9 +21,9 @@ import com.jazztech.cardholderapi.handler.exceptions.CreditAnalysisNotFoundExcep
 import com.jazztech.cardholderapi.handler.exceptions.InvalidCardHolderStatusException;
 import com.jazztech.cardholderapi.mapper.CardHolderMapper;
 import com.jazztech.cardholderapi.mapper.CardHolderMapperImpl;
+import com.jazztech.cardholderapi.model.CardHolderModel;
 import com.jazztech.cardholderapi.repository.CardHolderRepository;
 import com.jazztech.cardholderapi.repository.entity.CardHolderEntity;
-import com.jazztech.cardholderapi.utils.Status;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,13 +52,13 @@ class CardHolderServiceTest {
     private CardHolderMapperImpl cardHolderMapper;
 
     @Captor
-    private ArgumentCaptor<UUID> creditAnalysisUUID;
-    @Captor
     private ArgumentCaptor<UUID> cardHolderUUID;
     @Captor
     private ArgumentCaptor<CardHolderEntity> cardHolderEntityArgumentCaptor;
     @Captor
-    private ArgumentCaptor<Status> cardHolderStatus;
+    private ArgumentCaptor<UUID> creditAnalysisUUID;
+    @Captor
+    private ArgumentCaptor<CardHolderEntity.Status> cardHolderStatus;
 
     @InjectMocks
     private CardHolderService cardHolderService;
@@ -136,14 +136,14 @@ class CardHolderServiceTest {
         when(cardHolderRepository.findAllByStatus(cardHolderStatus.capture())).thenReturn(List.of(cardHolderEntityFactory()));
         final List<CardHolderResponse> cardHolderResponses = cardHolderService.getAllCardholdersByStatus("active");
         assertNotNull(cardHolderResponses);
-        assertEquals(cardHolderStatus.getValue(), cardHolderResponses.get(0).status());
+        assertEquals(CardHolderResponse.Status.ACTIVE, cardHolderResponses.get(0).status());
     }
 
     @Test
     void should_throw_InvalidCardHolderStatusException() {
-//        when(cardHolderRepository.findAllByStatus(cardHolderStatus.capture())).thenThrow(IllegalArgumentException.class);
+//        when(cardHolderService.getAllCardholdersByStatus("s")).thenThrow(InvalidCardHolderStatusException.class);
         final InvalidCardHolderStatusException exception =
-                assertThrows(InvalidCardHolderStatusException.class, () -> cardHolderService.getAllCardholdersByStatus("dsadsa"));
+                assertThrows(InvalidCardHolderStatusException.class, () -> cardHolderService.getAllCardholdersByStatus("A"));
         assertEquals("The informed card holder status is invalid.", exception.getMessage());
 
     }

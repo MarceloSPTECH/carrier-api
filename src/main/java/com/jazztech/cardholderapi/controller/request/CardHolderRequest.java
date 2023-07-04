@@ -34,7 +34,6 @@ public record CardHolderRequest(
             @Pattern(regexp = "\\d{3}", message = "Invalid bankCode, must be 'XXX'")
             String bankCode
     ) {
-
         public BankAccountRequest(String account, String agency, String bankCode) {
             this.account = account;
             this.agency = agency;
