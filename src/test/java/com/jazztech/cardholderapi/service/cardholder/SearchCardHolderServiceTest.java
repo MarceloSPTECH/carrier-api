@@ -52,7 +52,7 @@ class SearchCardHolderServiceTest {
         final List<CardHolderResponse> cardHolderResponses = searchCardHolderService.getAllCardholders();
         assertNotNull(cardHolderResponses);
         assertEquals(cardHolderEntities.size(), cardHolderResponses.size());
-        assertEquals(cardHolderEntities.get(0).getStatus(), cardHolderResponses.get(0).status());
+        assertEquals(CardHolderResponse.Status.ACTIVE, cardHolderResponses.get(0).status());
         assertEquals(cardHolderEntities.get(0).getId(), cardHolderResponses.get(0).id());
         assertEquals(cardHolderEntities.get(0).getCreditLimit(), cardHolderResponses.get(0).creditLimit());
     }

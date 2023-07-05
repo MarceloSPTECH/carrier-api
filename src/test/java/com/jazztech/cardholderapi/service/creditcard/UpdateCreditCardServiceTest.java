@@ -66,7 +66,6 @@ class UpdateCreditCardServiceTest {
                 creditCardEntityFactory());
         when(serviceVerifications.verifyAvailableCardHolderLimit(cardHolderIdCaptor.capture(), cardHolderLimitCaptor.capture())).thenReturn(
                 BigDecimal.valueOf(15000));
-        when(creditCardRepository.save(cardEntityCaptor.capture())).thenReturn(creditCardEntityUpdated);
 
         final LimitUpdateResponse limitUpdateResponse =
                 updateCreditCardService.updateCreditCardLimit(cardHolderEntityFactory().getId(), creditCardEntityFactory().getId(),

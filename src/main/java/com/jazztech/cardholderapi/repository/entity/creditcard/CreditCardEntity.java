@@ -15,8 +15,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.UpdateTimestamp;
 
+@Immutable
 @Entity
 @Table(name = "CREDIT_CARD")
 @AllArgsConstructor
